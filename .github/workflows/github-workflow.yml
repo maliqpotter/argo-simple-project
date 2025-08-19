@@ -1,4 +1,4 @@
-name: CI/CD 2048
+name: Demo-CICD-GitOps
 
 on:
   push:
