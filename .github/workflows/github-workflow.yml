@@ -15,7 +15,8 @@ env:
 jobs:
   build:
     name: Build & Push Image
-    runs-on: self-hosted
+    #runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
@@ -47,7 +48,8 @@ jobs:
 
   update_manifests:
     name: Update Manifests Repo (GitOps)
-    runs-on: self-hosted
+    #runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: build
     steps:
       - name: Prepare env
@@ -69,7 +71,7 @@ jobs:
       - name: Clone manifests repo (GitHub via SSH)
         run: |
           git clone git@github.com:maliqpotter/argo-simple-project.git
-          cd argo-simple-project/ame-demo
+          cd argo-simple-project/game-demo
 
           sed -i -E 's|^([[:space:]]*image:).*|\1 '"${DOCKER_IMAGE}"'|g' app/deployment.yaml
 
@@ -82,17 +84,18 @@ jobs:
             echo "No changes to commit."
           fi
 
-  deploy:
-    name: Apply ArgoCD Application
-    runs-on: self-hosted
-    needs: [build, update_manifests]
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Ensure KUBECONFIG
-        run: echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
-
-      - name: Apply ArgoCD Application
-        run: |
-          kubectl apply -f application.yml
-          kubectl get applications -n argocd
+#  deploy:
+#    name: Apply ArgoCD Application
+#    runs-on: self-hosted
+#    needs: [build, update_manifests]
+#    steps:
+#      - uses: actions/checkout@v4
+#
+#      - name: Ensure KUBECONFIG
+#        run: echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
+#
+#      - name: Apply ArgoCD Application
+#        run: |
+#          kubectl apply -f application.yml
+#          kubectl get applications -n argocd
+#
