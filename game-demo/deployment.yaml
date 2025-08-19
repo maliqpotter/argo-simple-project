@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: demo-game
+  name: demo-game
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: demo-game
+  template:
+    metadata:
+      labels:
+        app: demo-game
+    spec:
+      containers:
+      - image: docker.io/maliqpotter09/demo-game-skola
+        name: game
+        ports:
+        - containerPort: 80
