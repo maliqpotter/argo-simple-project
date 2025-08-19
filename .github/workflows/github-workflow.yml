@@ -70,14 +70,14 @@ jobs:
 
       - name: Clone manifests repo (GitHub via SSH)
         run: |
-          git clone git@github.com:maliqpotter/argo-simple-project.git
-          cd argo-simple-project/game-demo
+          git clone -b main git@github.com:maliqpotter/argo-simple-project.git
+          cd argo-simple-project
 
-          sed -i -E 's|^([[:space:]]*image:).*|\1 '"${DOCKER_IMAGE}"'|g' app/deployment.yaml
+          sed -i -E 's|^([[:space:]]*image:).*|\1 '"${DOCKER_IMAGE}"'|g' deployment.yaml
 
           git config user.name  "GitHub Actions"
           git config user.email "actions@github.local"
-          git add app/deployment.yaml
+          git add deployment.yaml
           if git commit -m "Update image to ${DOCKER_IMAGE}"; then
             git push
           else
