@@ -1,0 +1,98 @@
+name: CI/CD 2048
+
+on:
+  push:
+    branches: [ "demo-deploy" ]
+  workflow_dispatch:
+
+concurrency:
+  group: cicd-2048-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  IMAGE_NAME: docker.io/maliqpotter09/demo-game-skola
+
+jobs:
+  build:
+    name: Build & Push Image
+    runs-on: [self-hosted]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set SHORT_SHA & DOCKER_IMAGE
+        run: |
+          echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
+          echo "DOCKER_IMAGE=${IMAGE_NAME}:${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and Push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ env.DOCKER_IMAGE }}
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max
+
+      - name: Show pushed tag
+        run: echo "Pushed $DOCKER_IMAGE"
+
+  update_manifests:
+    name: Update Manifests Repo (GitOps)
+    runs-on: [self-hosted]
+    needs: build
+    steps:
+      - name: Prepare env
+        run: |
+          echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
+          echo "DOCKER_IMAGE=${IMAGE_NAME}:${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+      - name: Start ssh-agent and add key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add GitHub host key
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Clone manifests repo (GitHub via SSH)
+        run: |
+          git clone git@github.com:maliqpotter/argo-simple-project.git
+          cd argo-simple-project/ame-demo
+
+          sed -i -E 's|^([[:space:]]*image:).*|\1 '"${DOCKER_IMAGE}"'|g' app/deployment.yaml
+
+          git config user.name  "GitHub Actions"
+          git config user.email "actions@github.local"
+          git add app/deployment.yaml
+          if git commit -m "Update image to ${DOCKER_IMAGE}"; then
+            git push
+          else
+            echo "No changes to commit."
+          fi
+
+  deploy:
+    name: Apply ArgoCD Application
+    runs-on: [self-hosted]
+    needs: [build, update_manifests]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ensure KUBECONFIG
+        run: echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
+
+      - name: Apply ArgoCD Application
+        run: |
+          kubectl apply -f application.yml
+          kubectl get applications -n argocd

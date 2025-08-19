@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  namespace: argocd
+  labels:
+    app: demo-game
+  name: demo-game
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/maliqpotter/argo-simple-project.git
+    targetRevision: main
+    path: game-demo
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
