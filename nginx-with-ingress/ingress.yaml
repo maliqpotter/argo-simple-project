@@ -1,0 +1,29 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: nginx-mw
+spec:
+  stripPrefix:
+    forceSlash: false
+    prefixes:
+      - /websiteku
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx-ingress
+  labels:
+    app: nginx-app
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: default-web-mw@kubernetescrd
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /websiteku
+        pathType: Prefix
+        backend:
+          service:
+            name: nginx-service
+            port:
+              number: 80

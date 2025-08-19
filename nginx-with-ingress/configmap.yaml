@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  labels:
+    app: nginx-app
+data:
+  index.html: |
+    <html>
+    <h1>Selamat Datang</h1>
+    </br>
+    <h1>Ini adalah aplikasi Nginx sederhana.</h1>
+    </html>
