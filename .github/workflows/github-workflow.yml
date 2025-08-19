@@ -70,8 +70,8 @@ jobs:
 
       - name: Clone manifests repo (GitHub via SSH)
         run: |
-          git clone -b main git@github.com:maliqpotter/argo-simple-project.git argo-simple-project-deploy
-          cd argo-simple-project-deploy
+          git clone -b main git@github.com:maliqpotter/argo-simple-project.git
+          cd argo-simple-project
 
           sed -i -E 's|^([[:space:]]*image:).*|\1 '"${DOCKER_IMAGE}"'|g' game-demo/deployment.yaml
 
