@@ -1,9 +1,21 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: demo-game-mw
+spec:
+  stripPrefix:
+    forceSlash: false
+    prefixes:
+      - /gameku
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: demo-game-ingress
   labels:
     app: demo-game
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: default-demo-game-mw@kubernetescrd
 spec:
   rules:
   - http:
