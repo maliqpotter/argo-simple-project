@@ -15,8 +15,7 @@ env:
 jobs:
   build:
     name: Build & Push Image
-    #runs-on: [self-hosted, linux, X64]
-    runs-on: [runner-demoku]
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
 
@@ -48,7 +47,7 @@ jobs:
 
   update_manifests:
     name: Update Manifests Repo (GitOps)
-    runs-on: [runner-demoku]
+    runs-on: self-hosted
     needs: build
     steps:
       - name: Prepare env
@@ -85,7 +84,7 @@ jobs:
 
   deploy:
     name: Apply ArgoCD Application
-    runs-on: [runner-demoku]
+    runs-on: self-hosted
     needs: [build, update_manifests]
     steps:
       - uses: actions/checkout@v4
