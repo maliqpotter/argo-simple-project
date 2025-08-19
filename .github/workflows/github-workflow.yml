@@ -73,8 +73,17 @@ jobs:
           git clone -b main git@github.com:maliqpotter/argo-simple-project.git
           cd argo-simple-project
 
-          sed -i -E 's|^([[:space:]]*image:).*|\1 '"${DOCKER_IMAGE}"'|g' game-demo/deployment.yaml
-
+          # Debug steps
+          ls -la
+          find . -name "deployment.yaml"
+          cat game-demo/deployment.yaml
+          echo "Target image: ${DOCKER_IMAGE}"
+          
+          # Try a more specific sed pattern
+          sed -i -E 's|(image:).*docker.io/maliqpotter09/demo-game-skola.*|\1 '"${DOCKER_IMAGE}"'|g' game-demo/deployment.yaml
+          
+          git diff  # Show what changed
+          
           git config user.name  "GitHub Actions"
           git config user.email "actions@github.local"
           git add game-demo/deployment.yaml
