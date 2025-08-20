@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: demo-game-ingress
   labels:
-    app: demo-game-app
+    app: demo-game
 spec:
   rules:
   - http:
