@@ -1,5 +1,5 @@
 FROM httpd
-MAINTAINER Renaldy Gatan check
+MAINTAINER Renaldy Gatan Demo
 RUN apt update && apt install -y git curl && \
     rm -rf /usr/local/apache2/htdocs/* && \
     git clone https://github.com/gabrielecirulli/2048.git /usr/local/apache2/htdocs
