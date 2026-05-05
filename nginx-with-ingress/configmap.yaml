@@ -7,7 +7,7 @@ metadata:
 data:
   index.html: |
     <html>
-    <h1>Selamat Datang</h1>
+    <h1>Selamat Datang Di Digital Skola</h1>
     </br>
-    <h1>Ini adalah aplikasi Nginx sederhana. Ini adalah versi 1 dari Nginx dengan Ingress</h1>
+    <h1>Ini adalah aplikasi Nginx sederhana. Ini adalah versi 2 dari Nginx dengan Ingress</h1>
     </html>
