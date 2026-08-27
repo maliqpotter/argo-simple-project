@@ -1,27 +1,20 @@
-apiVersion: traefik.containo.us/v1alpha1
-kind: Middleware
-metadata:
-  name: nginx-mw
-spec:
-  stripPrefix:
-    forceSlash: false
-    prefixes:
-      - /websiteku
----
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: nginx-ingress
+  namespace: default
   labels:
     app: nginx-app
   annotations:
-    traefik.ingress.kubernetes.io/router.middlewares: default-nginx-mw@kubernetescrd
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
+  ingressClassName: nginx
   rules:
   - http:
       paths:
-      - path: /websiteku
-        pathType: Prefix
+      - path: /websiteku(/|$)(.*)
+        pathType: ImplementationSpecific
         backend:
           service:
             name: nginx-service
