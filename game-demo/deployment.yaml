@@ -15,7 +15,7 @@ spec:
         app: demo-game
     spec:
       containers:
-      - image: docker.io/maliqpotter09/demo-game-skola:470dc9d
+      - image: docker.io/maliqpotter09/demo-game-skola:711c54f
         name: game
         ports:
         - containerPort: 80
